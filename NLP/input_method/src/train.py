@@ -34,6 +34,7 @@ def train_one_epoch(model, dataloader, loss_function, optimizer, device):
         loss.backward()
 
         optimizer.step()
+        optimizer.zero_grad()
 
         total_loss += loss.item()
 
@@ -42,7 +43,7 @@ def train_one_epoch(model, dataloader, loss_function, optimizer, device):
 
 
 def train():
-    device = torch.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     dataloader = get_dataloader()
 
@@ -64,6 +65,7 @@ def train():
         if avg_loss < best_loss:
             best_loss = avg_loss
             torch.save(model.state_dict(), config.MODELS_DIR / 'model.pt')
+
 
 if __name__ == '__main__':
     train()

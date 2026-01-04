@@ -30,7 +30,7 @@ def process():
         config.RAW_DATA_DIR / "synthesized_.jsonl",
         lines=True,
         orient="records"
-    )
+    ).sample(frac=0.1, random_state=42)
     print(df.head())
 
     sentences = []
