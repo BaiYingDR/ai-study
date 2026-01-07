@@ -50,7 +50,7 @@ def train():
 
     tokenizer = JiebaTokenizer.from_vocab(config.PROCESSED_DATA_DIR / 'vocab.txt')
 
-    model = InputMethodModule(vocab_size=tokenizer.vacab_size).to(device)
+    model = InputMethodModule(vocab_size=tokenizer.vocab_size).to(device)
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
