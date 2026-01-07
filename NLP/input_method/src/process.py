@@ -4,17 +4,17 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 from NLP.input_method.src import config
+from NLP.input_method.src.tokenizer import JiebaTokenizer
 
 
-def build_dataset(word2index, sentences):
-    indexed_sentences = [[word2index.get(token, 0) for token in jieba.lcut(sentence)] for sentence in
-                         sentences]
-    train_dateset = []
+def build_dataset(tokenizer, sentences):
+    indexed_sentences = [tokenizer.encode(sentence) for sentence in sentences]
+    dateset = []
     for sentence in tqdm(indexed_sentences):
         for i in (range(len(sentence) - config.SEQ_LEN)):
-            train_dateset.append({'input': sentence[i:i + config.SEQ_LEN],
-                                  'target': sentence[i + config.SEQ_LEN]})
-    return train_dateset
+            dateset.append({'input': sentence[i:i + config.SEQ_LEN],
+                            'target': sentence[i + config.SEQ_LEN]})
+    return dateset
 
 
 def process():
@@ -51,15 +51,14 @@ def process():
     vocab_list = ['<unk>'] + list(vocab_set)
     print(len(vocab_list))
 
-    with open(config.MODELS_DIR / 'vocab.txt', 'w', encoding='utf-8') as f:
-        f.write("\n".join(vocab_list))
+    JiebaTokenizer.build_vocab(train_sentences, config.PROCESSED_DATA_DIR / 'vocab.txt')
 
-    word2index = {word: index for index, word in enumerate(vocab_list)}
+    tokenizer = JiebaTokenizer.from_vocab(config.PROCESSED_DATA_DIR / 'vocab.txt')
 
-    train_dateset = build_dataset(word2index, train_sentences)
+    train_dateset = build_dataset(tokenizer, train_sentences)
     pd.DataFrame(train_dateset).to_json(config.PROCESSED_DATA_DIR / 'train.jsonl', orient='records', lines=True)
 
-    test_dataset = build_dataset(word2index, test_sentences)
+    test_dataset = build_dataset(tokenizer, test_sentences)
     pd.DataFrame(test_dataset).to_json(config.PROCESSED_DATA_DIR / 'test.jsonl', orient='records', lines=True)
 
     print("数据处理完成")

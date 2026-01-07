@@ -7,6 +7,7 @@ from tqdm import tqdm
 from NLP.input_method.src import config
 from NLP.input_method.src.dataset import get_dataloader
 from NLP.input_method.src.model import InputMethodModule
+from NLP.input_method.src.tokenizer import JiebaTokenizer
 
 
 def train_one_epoch(model, dataloader, loss_function, optimizer, device):
@@ -47,10 +48,9 @@ def train():
 
     dataloader = get_dataloader()
 
-    with open(config.MODELS_DIR / 'vocab.txt', 'r', encoding='utf-8') as f:
-        vocab_list = [line.strip() for line in f.readlines()]  # f.read().splitlines()
+    tokenizer = JiebaTokenizer.from_vocab(config.PROCESSED_DATA_DIR / 'vocab.txt')
 
-    model = InputMethodModule(vocab_size=len(vocab_list)).to(device)
+    model = InputMethodModule(vocab_size=tokenizer.vacab_size).to(device)
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
