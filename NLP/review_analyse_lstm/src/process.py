@@ -13,7 +13,7 @@ def process():
         safe_path_join(config.RAW_DATA_DIR, "online_shopping_10_cats.csv"),
         usecols=['label', 'review'],
         encoding="UTF-8"
-    ).dropna().sample(frac=0.1, random_state=42)
+    ).dropna().sample(frac=0.8, random_state=42)
 
     # 验证数据是否为空
     if df.empty:

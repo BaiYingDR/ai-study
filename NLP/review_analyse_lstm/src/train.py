@@ -12,28 +12,28 @@ from NLP.review_analyse_lstm.src.tokenizer import JiebaTokenizer
 
 def train_one_epoch(model, dataloader, loss_function, optimizer, device):
     """
-        训练一个 epoch。
-
-        :param model: 输入法模型。
-        :param dataloader: 数据加载器。
-        :param loss_function: 损失函数。
-        :param optimizer: 优化器。
-        :param device: 设备。
-        :return: 平均损失。
+    训练模型一个epoch
+    Args:
+        model: 待训练的神经网络模型
+        dataloader: 训练数据的数据加载器
+        loss_function: 损失函数
+        optimizer: 优化器
+        device: 训练设备（CPU或GPU）
+    Returns:
+        float: 当前epoch的平均损失值
     """
-
     total_loss = 0
     model.train()
+
+    # 遍历训练数据进行前向传播、反向传播和参数更新
     for inputs, targets in tqdm(dataloader, desc="train"):
         inputs, targets = inputs.to(device), targets.to(device)
 
-        optimizer.zero_grad()
         outputs = model(inputs)
 
         loss = loss_function(outputs, targets)
 
         loss.backward()
-
         optimizer.step()
         optimizer.zero_grad()
 
@@ -58,7 +58,7 @@ def train():
     tokenizer = JiebaTokenizer.from_vocab(config.PROCESSED_DATA_DIR / 'vocab.txt')
 
     # 初始化模型，使用分词器的词汇表大小和填充值索引
-    model = ReviewAnalyzeModel(tokenizer.vocab_size, padding_idx=0).to(device)
+    model = ReviewAnalyzeModel(tokenizer.vocab_size, padding_idx=tokenizer.pad_token_index).to(device)
 
     # 定义损失函数：带logits的二元交叉熵损失
     loss_fn = torch.nn.BCEWithLogitsLoss()

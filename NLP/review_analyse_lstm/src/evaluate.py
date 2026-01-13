@@ -19,14 +19,14 @@ def evaluate(model, dataloader, device):
     total_count = 0
     correct_count = 0
 
-    model.eval()
+
     for inputs, targets in dataloader:
         # 数据转移到设备
         inputs = inputs.to(device)
         targets = targets.tolist()
 
         # 获取预测概率
-        probs = predict_batch(inputs, model)
+        probs = predict_batch(model, inputs)
 
         # 统计准确率
         for prob, target in zip(probs, targets):
@@ -45,7 +45,7 @@ def run_evaluate():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     tokenizer = JiebaTokenizer.from_vocab(config.PROCESSED_DATA_DIR / 'vocab.txt')
 
-    model = ReviewAnalyzeModel(vocab_size=tokenizer.vocab_size, padding_idx=tokenizer.pad_token_index).to(device)
+    model = ReviewAnalyzeModel(tokenizer.vocab_size, tokenizer.pad_token_index).to(device)
     model.load_state_dict(torch.load(config.MODELS_DIR / 'model.pt'))
 
     dataloader = get_dataloader(train=False)

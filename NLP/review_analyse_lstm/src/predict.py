@@ -40,7 +40,7 @@ def predict(text, device, tokenizer, model):
 def run_predict():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     tokenizer = JiebaTokenizer.from_vocab(config.PROCESSED_DATA_DIR / 'vocab.txt')
-    model = ReviewAnalyzeModel(vocab_size=len(tokenizer.vocab_list), padding_idx=0).to(device)
+    model = ReviewAnalyzeModel(tokenizer.vocab_size, tokenizer.pad_token_index).to(device)
     model.load_state_dict(torch.load(config.MODELS_DIR / 'model.pt', map_location=device))
 
     while True:
@@ -49,7 +49,7 @@ def run_predict():
             break
         if user_input == '':
             continue
-        result = predict(user_input)
+        result = predict(user_input,device,tokenizer,model)
 
         if result > 0.5:
             print("positive")

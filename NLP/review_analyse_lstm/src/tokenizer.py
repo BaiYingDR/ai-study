@@ -14,6 +14,7 @@ class JiebaTokenizer:
         self.word2index = {word: index for index, word in enumerate(vocab_list)}
         self.index2word = {index: word for index, word in enumerate(vocab_list)}
         self.unk_token_index = self.word2index[self.unk_token]
+        self.pad_token_index = self.word2index[self.pad_token]
 
     @staticmethod
     def tokenize(sentence):
